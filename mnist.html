@@ -7521,6 +7521,35 @@ a.anchor-link {
 </div>
 </div>
 </div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<p>For the normalization (X-train / 255), each element in the training set matrix will be divided by 255.</p>
+<p>Normalization by dividing each pixel value by 255 scales these values to be between 0 and 1. This scaling is common practice in image processing and machine learning, particularly when working with image data, as it helps with the convergence of learning algorithms by ensuring that input features (in this case, pixel values) are on a similar scale.</p>
+<p>Some sample values (elements from the X_train matrix): 7, 186, 252, 227, 184, 191, 252, 252, 252, 252, 253, 240, 50</p>
+<p>After normalization: Each of these values will be divided by 255.
+For example:</p>
+<p>$$
+\[
+\frac{7}{255} \approx 0.027
+\]
+
+\[
+\frac{186}{255} \approx 0.729
+\]
+
+\[
+\frac{252}{255} \approx 0.988
+\]
+$$</p>
+<p>And so on for the rest of the values. This transformation results in a dataset where all pixel values lie in the range [0, 1], which is easier for many machine learning models to handle efficiently. This normalized dataset would then be used for training your neural network, helping the model learn and make predictions more effectively.</p>
+</div>
+</div>
+</div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
@@ -7684,6 +7713,142 @@ $$
 \sigma(\mathbf{z})_i = \frac{e^{z_i}}{\sum_{k=1}^K e^{z_k}}
 $$
 Where each $$( \sigma(\mathbf{z})_i )$$ is the probability corresponding to each original number after applying the softmax.</p>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-python"><pre><span></span><span class="k">def</span> <span class="nf">forward_prop</span><span class="p">(</span><span class="n">W1</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">b2</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+    <span class="n">Z1</span> <span class="o">=</span> <span class="n">W1</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">+</span> <span class="n">b1</span>
+    <span class="n">A1</span> <span class="o">=</span> <span class="n">ReLU</span><span class="p">(</span><span class="n">Z1</span><span class="p">)</span>
+    <span class="n">Z2</span> <span class="o">=</span> <span class="n">W2</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">A1</span><span class="p">)</span> <span class="o">+</span> <span class="n">b2</span>
+    <span class="n">A2</span> <span class="o">=</span> <span class="n">softmax</span><span class="p">(</span><span class="n">Z2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Z1</span><span class="p">,</span> <span class="n">A1</span><span class="p">,</span> <span class="n">Z2</span><span class="p">,</span> <span class="n">A2</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<p>Z1 is going to be the result of the matrix multiplication (dot product, hence .dot) of W1, which has dimensions
+of 10x784, and X, which is, per the Gradient Descent function call at the bottom of the script, the X_train variable.</p>
+<p>Since the X_train variable is equal to, starting at 1000, and going for the rest of the samples (m), it will be a matrix
+with dimensions 784 x m, or 784 x 32,000.</p>
+<p>Therefore, the product will be a matrix of dimension 10 x 32,000.</p>
+<p>We then add, or broadcast the bias vector, b1, to each element in the 10 x 32,000 matrix.</p>
+<p>We now have Z1.</p>
+<p>Next, we apply the ReLU function to each element in Z1, which gives us A1 (Still with dimensions 10 x 32,000)</p>
+<p>We broadcast the b2 vector on each element for the product, which gives us Z2.</p>
+<p>Finally, we apply the softmax function to Z2.  Referring back to the softmax explanation, for each column
+in Z2 ( 10 x 32,000), so 32,000 columns, each logit (element in each column) is exponentiated.  Then, we take
+the sum of the exponentiated logits, and divide each exponentiated logit by that sum.</p>
+<p>Now, A2 is a 10 x 32,000 matrix, with each column being a probability distribution which will then be compared
+against the actual labels created by the upcoming one hot function.  This comparision is how the model
+computes the gradients and updates the parameters.</p>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-python"><pre><span></span><span class="k">def</span> <span class="nf">ReLU_deriv</span><span class="p">(</span><span class="n">Z</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">Z</span> <span class="o">&gt;</span> <span class="mi">0</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<p>Derivative of ReLU</p>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-python"><pre><span></span><span class="k">def</span> <span class="nf">one_hot</span><span class="p">(</span><span class="n">Y</span><span class="p">):</span>
+    <span class="n">one_hot_Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">Y</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">Y</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">one_hot_Y</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">Y</span><span class="o">.</span><span class="n">size</span><span class="p">),</span> <span class="n">Y</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">one_hot_Y</span> <span class="o">=</span> <span class="n">one_hot_Y</span><span class="o">.</span><span class="n">T</span>
+    <span class="k">return</span> <span class="n">one_hot_Y</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<p>One hot encoding:</p>
+<p>Per the Gradient Descent function input parameters:</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">gradient_descent</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">iterations</span><span class="p">):</span>
+    <span class="n">W1</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">b2</span> <span class="o">=</span> <span class="n">init_params</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">iterations</span><span class="p">):</span>
+        <span class="n">Z1</span><span class="p">,</span> <span class="n">A1</span><span class="p">,</span> <span class="n">Z2</span><span class="p">,</span> <span class="n">A2</span> <span class="o">=</span> <span class="n">forward_prop</span><span class="p">(</span><span class="n">W1</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">b2</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span>
+        <span class="n">dW1</span><span class="p">,</span> <span class="n">db1</span><span class="p">,</span> <span class="n">dW2</span><span class="p">,</span> <span class="n">db2</span> <span class="o">=</span> <span class="n">backward_prop</span><span class="p">(</span><span class="n">Z1</span><span class="p">,</span> <span class="n">A1</span><span class="p">,</span> <span class="n">Z2</span><span class="p">,</span> <span class="n">A2</span><span class="p">,</span> <span class="n">W1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
+        <span class="n">W1</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">b2</span> <span class="o">=</span> <span class="n">update_params</span><span class="p">(</span><span class="n">W1</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">b2</span><span class="p">,</span> <span class="n">dW1</span><span class="p">,</span> <span class="n">db1</span><span class="p">,</span> <span class="n">dW2</span><span class="p">,</span> <span class="n">db2</span><span class="p">,</span> <span class="n">alpha</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">10</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"Iteration: "</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+            <span class="n">predictions</span> <span class="o">=</span> <span class="n">get_predictions</span><span class="p">(</span><span class="n">A2</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">get_accuracy</span><span class="p">(</span><span class="n">predictions</span><span class="p">,</span> <span class="n">Y</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">W1</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">b2</span>
+<span class="n">W1</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">b2</span> <span class="o">=</span> <span class="n">gradient_descent</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">Y_train</span><span class="p">,</span> <span class="mf">0.10</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+</pre></div>
+<p>We see that with the gradient_descent function call, that Y is the Y_train variable, which is:</p>
+<div class="highlight"><pre><span></span><span class="n">Y_train</span> <span class="o">=</span> <span class="n">data_train</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+<p>So, we can see that it is talking about the labels.</p>
+<p>If we examine the dataset, we will see (before any transposition), that the first column is called "Label", and each row therefore in the first [0] column, has the names.</p>
+<p>In the dataset used in the video link, the first 5 (before randomization of course), are 1,0,1,4,0.</p>
+<p>So, one hot encoding basically creates the ground truth matrix that this model will check itself against.  The one hot matrix will have a dimension of 10 x 32,000 and, for example's sake, let's assume that the first 10 columns (remember, we are dealing with a transposed matrix) are 1,0,1,4,0,0,7,3,5:</p>
+<p>$$
+\begin{array}{c|ccccccccc}
+\text{Class/Example} &amp; 1 &amp; 0 &amp; 1 &amp; 4 &amp; 0 &amp; 0 &amp; 7 &amp; 3 &amp; 5 &amp; 3\\
+\hline
+0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 1 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+1 &amp; 1 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+2 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+3 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 1 \\
+4 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+5 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 \\
+6 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+7 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 \\
+8 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+9 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+\end{array}
+$$</p>
 </div>
 </div>
 </div>
